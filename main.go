@@ -10,6 +10,7 @@ import (
 	"html"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -29,7 +30,7 @@ func main() {
 		urlWithQuery := url + "?" + c.Request.URL.RawQuery
 		payload := []byte(fmt.Sprintf(`{"cmd": "request.get", "url": "%s"}`, urlWithQuery))
 		buffer := bytes.NewBuffer(payload)
-		post, err := http.Post("http://localhost:8191/v1", "application/json", buffer)
+		post, err := http.Post(os.Getenv("FLARESOLVERR_URL"), "application/json", buffer)
 		if err != nil {
 			print(err)
 			return
@@ -75,5 +76,5 @@ func main() {
 		}
 		c.String(200, response.Solution.Response)
 	})
-	app.Run(":8192")
+	app.Run(":" + os.Getenv("PORT"))
 }

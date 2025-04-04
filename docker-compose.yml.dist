@@ -1,0 +1,32 @@
+services:
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=info
+      - LOG_HTML=false
+      - CAPTCHA_SOLVER=none
+      - TZ=Europe/Paris
+      - LANG=fr_FR
+    restart: unless-stopped
+    networks:
+      - net
+  flaresolverr-proxy:
+    container_name: flaresolverr-proxy
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - flaresolverr
+    ports:
+      - '8192:80'
+    environment:
+      FLARESOLVERR_URL: 'http://flaresolverr:8191/v1'
+      PORT: 80
+    networks:
+      - net
+
+networks:
+  net:
+    driver: bridge
